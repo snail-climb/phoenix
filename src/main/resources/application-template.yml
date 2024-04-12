@@ -1,0 +1,30 @@
+# config class name
+KafkaConfig:
+  demo:
+    bootstrapServers: xxx
+    topics: xxx
+    groupId: xxx
+    # earliest or latest, otherwise latest
+    autoOffsetReset: xxx
+  phoenix:
+    bootstrapServers: xxx
+    topics: xxx
+    groupId: xxx
+    autoOffsetReset: xxx
+JdbcConfig:
+  demo:
+    driverName: xxx
+    url: xxx
+    username: xxx
+    password: xxx
+    batchSize: 1000
+    batchIntervalMs: 1000
+    maxRetries: 3
+  phoenix:
+    driverName: xxx
+    url: xxx
+    username: xxx
+    password: xxx
+    batchSize: 1000
+    batchIntervalMs: 1000
+    maxRetries: 3
