@@ -29,6 +29,9 @@ public class LineageInfo {
 	private List<Edge> edges;
 	private List<Vertices> vertices;
 
+	private String hqlKey;
+	private String rawLineage;
+
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	@Data
 	public static class Edge {

@@ -1,6 +1,5 @@
 package org.sky.phoenix.service;
 
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
@@ -19,6 +18,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.sky.phoenix.common.utils.BusinessUtil.buildFieldLineage;
+import static org.sky.phoenix.common.utils.BusinessUtil.hash;
 import static org.sky.phoenix.common.utils.SystemUtil.createObjectMapper;
 
 /**
@@ -37,9 +37,10 @@ public class BusinessProcess {
 			@Override
 			public void processElement(String json, Context ctx, Collector<LineageInfo> collector) {
 				try {
-					JsonNode jsonNode = objectMapper.readTree(json);
-					String message = jsonNode.get("message").asText();
+					String message = objectMapper.readTree(json).get("message").asText();
 					LineageInfo lineageInfo = objectMapper.readValue(message, LineageInfo.class);
+					lineageInfo.setHqlKey(hash(lineageInfo.getQueryText()));
+					lineageInfo.setRawLineage(message);
 					collector.collect(lineageInfo);
 				} catch (Exception e) {
 					ctx.output(errorOutputTag, json);
@@ -54,8 +55,8 @@ public class BusinessProcess {
 			public void processElement(LineageInfo lineageInfo, Context ctx, Collector<RawLineage> collector) {
 				LocalDateTime queryStartTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(lineageInfo.getTimestamp()), ZoneId.of("Asia/Shanghai"));
 				RawLineage rawLineage = RawLineage.builder()
-					.hqlKey(lineageInfo.getHash())
-					.rawLineage(lineageInfo.getQueryText())
+					.hqlKey(lineageInfo.getHqlKey())
+					.rawLineage(lineageInfo.getRawLineage())
 					.execStartTime(queryStartTime)
 					.execSpendMs(lineageInfo.getDuration())
 					.createTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
@@ -79,7 +80,7 @@ public class BusinessProcess {
 					for (DatabaseSchemaInfo targetInfo : targetData) {
 						for (DatabaseSchemaInfo sourceInfo : sourceData) {
 							FieldLineage fieldLineage = FieldLineage.builder()
-								.targetHqlKey(lineageInfo.getHash())
+								.targetHqlKey(lineageInfo.getHqlKey())
 								.targetDb(targetInfo.getDb())
 								.targetTable(targetInfo.getTable())
 								.targetField(targetInfo.getField())
@@ -88,7 +89,6 @@ public class BusinessProcess {
 								.downstreamFiled(sourceInfo.getField())
 								.createTime(LocalDateTime.now(ZoneId.of("Asia/Shanghai")))
 								.build();
-							fieldLineage.setHashcode(Objects.hashCode(fieldLineage.toString()));
 							fieldLineageList.add(fieldLineage);
 						}
 					}
