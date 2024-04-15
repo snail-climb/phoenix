@@ -30,17 +30,4 @@ public class FieldLineage {
 	private String downstreamTable;
 	private String downstreamFiled;
 	private LocalDateTime createTime;
-
-	@Override
-	public String toString() {
-		return "FieldLineage{" +
-			"targetHqlKey='" + targetHqlKey + '\'' +
-			", targetDb='" + targetDb + '\'' +
-			", targetTable='" + targetTable + '\'' +
-			", targetField='" + targetField + '\'' +
-			", downstreamDb='" + downstreamDb + '\'' +
-			", downstreamTable='" + downstreamTable + '\'' +
-			", downstreamFiled='" + downstreamFiled + '\'' +
-			'}';
-	}
 }

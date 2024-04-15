@@ -34,8 +34,7 @@ public class PhoenixApplication {
 		try (StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config)) {
 			env.disableOperatorChaining();
 
-			final OutputTag<String> errorJsonParseOutputTag = new OutputTag<>("error-json-parse-output") {
-			};
+			final OutputTag<String> errorJsonParseOutputTag = new OutputTag<>("error-json-parse-output") {};
 			KafkaConfig kafkaConfig = getSpecifiedKafkaConfig("phoenix");
 			JdbcConfig jdbcConfig = getSpecifiedJdbcConfig("phoenix");
 
