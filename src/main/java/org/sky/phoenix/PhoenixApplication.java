@@ -1,6 +1,7 @@
 package org.sky.phoenix;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -33,7 +34,7 @@ public class PhoenixApplication {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(config);
 		env.disableOperatorChaining();
 
-		final OutputTag<String> errorJsonParseOutputTag = new OutputTag<String>("error-json-parse-output") {};
+		final OutputTag<String> errorJsonParseOutputTag = new OutputTag<>("error-json-parse-output", Types.STRING);
 		KafkaConfig kafkaConfig = getSpecifiedKafkaConfig("phoenix");
 		JdbcConfig jdbcConfig = getSpecifiedJdbcConfig("phoenix");
 
